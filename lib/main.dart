@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pocetak5/data/dummy_items.dart';
-import 'package:pocetak5/widgets/grocery_item.dart';
+import 'package:pocetak5/widgets/grocery_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,18 +21,7 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color.fromARGB(255, 50, 58, 60),
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text("Your Groceries")),
-        body: ListView.builder(
-          itemCount: groceryItems.length,
-          itemBuilder:
-              (item, index) => GroceryItem(
-                color: groceryItems[index].category.color,
-                text: groceryItems[index].name,
-                dataCount: groceryItems[index].quantity,
-              ),
-        ),
-      ),
+      home: GroceryList(),
     );
   }
 }

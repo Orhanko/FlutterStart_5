@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GroceryItem extends StatelessWidget {
-  const GroceryItem({
+class GroceryListItem extends StatelessWidget {
+  const GroceryListItem({
     super.key,
     required this.color,
     required this.text,
@@ -12,21 +12,10 @@ class GroceryItem extends StatelessWidget {
   final int dataCount;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-          width: 20,
-          height: 20,
-          color: color,
-        ),
-        Text(text),
-        Spacer(),
-        Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: Text(dataCount.toString()),
-        ),
-      ],
+    return ListTile(
+      title: Text(text),
+      leading: Container(width: 24, height: 24, color: color),
+      trailing: Text(dataCount.toString(), style: TextStyle(fontSize: 16)),
     );
   }
 }
