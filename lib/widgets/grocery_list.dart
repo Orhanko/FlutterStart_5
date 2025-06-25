@@ -40,15 +40,62 @@ class _GroceryListState extends State<GroceryList> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: listOfItems.length,
-        itemBuilder:
-            (item, index) => GroceryListItem(
-              color: listOfItems[index].category.color,
-              text: listOfItems[index].name,
-              dataCount: listOfItems[index].quantity,
-            ),
-      ),
+      body:
+          listOfItems.isEmpty
+              ? SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "List of Groceries is empty!",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    Text(
+                      "Hurry up to add a new one...",
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              )
+              : ListView.builder(
+                itemCount: listOfItems.length,
+                itemBuilder:
+                    (item, index) => Dismissible(
+                      key: ValueKey(listOfItems[index].id),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        child: Row(
+                          children: [
+                            Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                      onDismissed: (direction) {
+                        setState(() {
+                          listOfItems.removeAt(index);
+                        });
+                      },
+                      child: GroceryListItem(
+                        color: listOfItems[index].category.color,
+                        text: listOfItems[index].name,
+                        dataCount: listOfItems[index].quantity,
+                      ),
+                    ),
+              ),
     );
   }
 }

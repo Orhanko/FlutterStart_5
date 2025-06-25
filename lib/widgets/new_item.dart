@@ -109,12 +109,14 @@ class NewItemState extends State<NewItem> {
                   ),
                 ],
               ),
+              Divider(height: 50, thickness: 0),
               Row(
                 children: [
                   Spacer(),
                   TextButton(
                     onPressed: () {
                       formKey.currentState!.reset();
+                      enteredCategory = categories[Categories.vegetables]!;
                     },
                     child: Text("Reset"),
                   ),
