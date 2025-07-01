@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:pocetak5/data/categories.dart';
+import 'package:pocetak5/data/dummy_items.dart';
 import 'package:pocetak5/models/grocery_item.dart';
 import 'package:pocetak5/widgets/grocery_item.dart';
 import 'package:pocetak5/widgets/new_item.dart';
+import 'package:http/http.dart' as http;
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -11,7 +16,53 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  final List<GroceryItem> listOfItems = [];
+  @override
+  void initState() {
+    super.initState();
+    loadList();
+  }
+
+  List<GroceryItem> listOfItems = [];
+  var isLoading = true;
+  String error = "";
+
+  void loadList() async {
+    final url = Uri.https(
+      'flutter-start-ca48a-default-rtd.firebaseio.com',
+      'shoping-lista.json',
+    );
+    final response = await http.get(url);
+    print("De mi ovdje molim te ispirntaj status code: ${response.statusCode}");
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        isLoading = false;
+        error = "Failed to fetch data. Please try again.";
+      });
+      return;
+    }
+
+    final Map<String, dynamic> listData = json.decode(response.body);
+    final List<GroceryItem> loadedItems = [];
+    for (final item in listData.entries) {
+      final category = categories.entries.firstWhere(
+        (catItem) => catItem.value.name == item.value['category'],
+      );
+      loadedItems.add(
+        GroceryItem(
+          id: item.key,
+          name: item.value['name'],
+          quantity: item.value['quantity'],
+          category: category.value,
+        ),
+      );
+    }
+    setState(() {
+      listOfItems = loadedItems;
+      isLoading = false;
+    });
+  }
+
   void addItem() async {
     final newItem = await Navigator.of(
       context,
@@ -19,11 +70,11 @@ class _GroceryListState extends State<GroceryList> {
 
     if (newItem == null) {
       return;
-    } else {
-      setState(() {
-        listOfItems.add(newItem);
-      });
     }
+
+    setState(() {
+      listOfItems.add(newItem);
+    });
   }
 
   @override
@@ -41,7 +92,11 @@ class _GroceryListState extends State<GroceryList> {
         ],
       ),
       body:
-          listOfItems.isEmpty
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : error.isNotEmpty
+              ? Center(child: Text(error))
+              : listOfItems.isEmpty
               ? SizedBox(
                 width: double.infinity,
                 child: Column(
