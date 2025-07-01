@@ -28,7 +28,7 @@ class _GroceryListState extends State<GroceryList> {
 
   void loadList() async {
     final url = Uri.https(
-      'flutter-start-ca48a-default-rtd.firebaseio.com',
+      'flutter-start-ca48a-default-rtdb.firebaseio.com',
       'shoping-lista.json',
     );
     final response = await http.get(url);
@@ -75,6 +75,25 @@ class _GroceryListState extends State<GroceryList> {
     setState(() {
       listOfItems.add(newItem);
     });
+  }
+
+  void removeItem(GroceryItem item) async {
+    int indexOfItem = listOfItems.indexOf(item);
+    final url = Uri.https(
+      'flutter-start-ca48a-default-rtdb.firebaseio.com',
+      'shoping-lista/${item.id}.json',
+    );
+    setState(() {
+      listOfItems.remove(item);
+    });
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      print("Status code je veci od 400, vracen je item");
+      setState(() {
+        listOfItems.insert(indexOfItem, item);
+      });
+    }
   }
 
   @override
@@ -140,9 +159,10 @@ class _GroceryListState extends State<GroceryList> {
                         ),
                       ),
                       onDismissed: (direction) {
-                        setState(() {
-                          listOfItems.removeAt(index);
-                        });
+                        // setState(() {
+                        //   listOfItems.removeAt(index);
+                        // });
+                        removeItem(listOfItems[index]);
                       },
                       child: GroceryListItem(
                         color: listOfItems[index].category.color,
